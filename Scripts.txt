@@ -1,0 +1,65 @@
+Note: might want to delete tmp folder to reset kafka states if receive error upon multiple re-initializations
+
+Initialization:
+Open two different terminal at kafka folder:
+
+.\bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+
+.\bin\windows\kafka-server-start.bat config\server.properties
+
+Create topics:
+Open window cmd:
+
+.\bin\windows\kafka-topics.bat --create --topic user-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+.\bin\windows\kafka-topics.bat --create --topic auth-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+.\bin\windows\kafka-topics.bat --create --topic product-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+.\bin\windows\kafka-topics.bat --create --topic cart-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+.\bin\windows\kafka-topics.bat --create --topic order-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+Testing:
+auth: 8080
+user: 8081
+product: 8082
+cart: 8083
+order: 8084
+
+Open another window cmd, make sure to run all projects first.
+Be sure to read the code carefully, as different roles have different endpoints access permissions. 
+Delete the folder "middleware" to remove role-based access permissions.
+
+// Log in as admin
+
+Step 1: Register account
+curl -X POST "http://localhost:8080/token-sessions/register?email=admin@example.com&password=password123&role=ADMIN"
+
+Step 2: Login account
+curl -X POST "http://localhost:8080/token-sessions/login?email=admin@example.com&password=password123&role=ADMIN"
+
+// Log in as customer
+
+Step 1: Register account
+curl -X POST "http://localhost:8080/token-sessions/register?email=customer@example.com&password=password123&role=CUSTOMER"
+
+Step 2: Login account
+curl -X POST "http://localhost:8080/token-sessions/login?email=customer@example.com&password=password123&role=CUSTOMER"
+
+Step 3:
+
+// Guest customer (don't login)
+
+Step 0: View products - simply perform GET method to product service
+
+Step 1: Create an empty cart
+curl -X POST http://localhost:8083/cart -H "Content-Type: application/json" -d ^
+"{\"totalPrice\": 0, \"items\": []}"
+
+Step 2: Add a product to cart
+curl -X POST http://localhost:8083/cart/1 -H "Content-Type: application/json" -d ^
+"{\"itemID\": 1}"
+
+Step 3: Check out
+curl -X POST http://localhost:8083/cart/checkout?cartID=1^&customerID=-1
