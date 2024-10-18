@@ -21,11 +21,11 @@ Open window cmd:
 .\bin\windows\kafka-topics.bat --create --topic order-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 Testing:
-auth: 8080
-user: 8081
-product: 8082
-cart: 8083
-order: 8084
+auth: http://localhost:8080/h2-console/
+user: http://localhost:8081/h2-console/
+product: http://localhost:8082/h2-console/
+cart: http://localhost:8083/h2-console/
+order: http://localhost:8084/h2-console/
 
 Open another window cmd, make sure to run all projects first.
 Be sure to read the code carefully, as different roles have different endpoints access permissions. 
